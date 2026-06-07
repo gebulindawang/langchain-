@@ -1,17 +1,14 @@
-from langchain.agents import  create_agent
+from langchain_deepseek import ChatDeepSeek                      
+from langchain_core.prompts import ChatPromptTemplate           
+from langchain_core.output_parsers import StrOutputParser        
 
-def get_weather(city:str):
-    """ 帮我查询指定天气的情况 """
-    return f"{city}总是晴天"
+llm = ChatDeepSeek(model = "deepseek-v4-flash",temperature=0.7)
+prompt = ChatPromptTemplate.from_messages([
+    ("system" ,"你是一个全能型的助手"),
+    ("human" , "请解释是{topic}")
+])
 
-agent = create_agent(
-    model="deepseek-v4-flash",
-    tools= [get_weather],
-    system_prompt= "You are a helpful assistant"
-)
+chain  = prompt | llm | StrOutputParser()
 
-result = agent.invoke(
-    {"messages" : [{"role" : "user", "content" : "郑州的天气怎么样"}]}
-)
-
-print(result)
+response = chain.invoke({"topic": "Java程序设计"})
+print(response)
